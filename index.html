@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fruit Ninja</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+  <div class="game-division" id="game-division">
+    <h1 id="score">Score: 0</h1>
+    <div class="trail-container">
+      <div class="cursor"></div>
+    </div>
+    <button class="button" id="playButton" data-text="Awesome">
+      <span class="actual-text">&nbsp;StartGame&nbsp;</span>
+      <span aria-hidden="true" class="hover-text">&nbsp;StartGame&nbsp;</span>
+    </button>
+    <button class="button" id="replayButton" data-text="Awesome" style="display: none;">
+      <span class="actual-text">&nbsp;TryAgain&nbsp;</span>
+      <span aria-hidden="true" class="hover-text">&nbsp;TryAgain&nbsp;</span>
+    </button>
+  </div>
+  <script type="module" src="src/js/scene.js"></script>
+</body>
+
+</html>
