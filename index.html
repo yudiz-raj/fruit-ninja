@@ -9,8 +9,22 @@
 </head>
 
 <body>
-  <div class="game-division" id="game-division">
-    <h1 id="score">Score: 0</h1>
+  <!-- <div id="loading-screen">
+    <div class="loading-content">
+      <p>Loading...</p>
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+    </div>
+  </div> -->
+  <div class="game" id="game-division">
+    <div id="score-container">
+      <div class="score-row">
+        <img id="logo-image" src="src/assets/images/logo.png" alt="Logo">
+        <span id="score">0</span>
+      </div>
+      <span id="best-score">Best: 0</span>
+    </div>
     <div class="trail-container">
       <div class="cursor"></div>
     </div>
@@ -24,6 +38,7 @@
     </button>
   </div>
   <script type="module" src="src/js/scene.js"></script>
+  <!-- <script src="src/js/index.js"></script> -->
 </body>
 
 </html>
