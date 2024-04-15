@@ -5,20 +5,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fruit Ninja</title>
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <!-- <div id="loading-screen">
+  <div id="loading-screen">
     <div class="loading-content">
+      <div class="loading-spinner"></div>
       <p>Loading...</p>
-      <div class="progress-bar">
-        <div class="progress"></div>
-      </div>
     </div>
-  </div> -->
+  </div>
   <div class="game" id="game-division">
-    <div id="score-container">
+    <div id="score-container" style="display: none;">
       <div class="score-row">
         <img id="logo-image" src="src/assets/images/logo.png" alt="Logo">
         <span id="score">0</span>
@@ -28,17 +26,22 @@
     <div class="trail-container">
       <div class="cursor"></div>
     </div>
-    <button class="button" id="playButton" data-text="Awesome">
-      <span class="actual-text">&nbsp;StartGame&nbsp;</span>
-      <span aria-hidden="true" class="hover-text">&nbsp;StartGame&nbsp;</span>
-    </button>
-    <button class="button" id="replayButton" data-text="Awesome" style="display: none;">
-      <span class="actual-text">&nbsp;TryAgain&nbsp;</span>
-      <span aria-hidden="true" class="hover-text">&nbsp;TryAgain&nbsp;</span>
-    </button>
-  </div>
-  <script type="module" src="src/js/scene.js"></script>
-  <!-- <script src="src/js/index.js"></script> -->
+    <div class="start-screen" id="start-screen" style="display: none;">
+      <h1 class="game-title">Fruit Ninja</h1>
+      <p class="game-instructions">Slice the fruits with your cursor. Avoid hitting the bombs!</p>
+      <button class="button" id="playButton" data-text="Awesome">
+        <span class="actual-text">&nbsp;StartGame&nbsp;</span>
+      </button>
+    </div>
+    <div class="game-over" id="game-over" style="display: none;">
+      <h1>Game Over</h1>
+      <p id="final-score-txt">Your Score: <span id="final-score">0</span></p>
+      <p id="final-best-score-txt">Best Score: <span id="final-best-score">0</span></p>
+      <button class="button" id="replayButton" data-text="Awesome" style="display: none;">
+        <span class="actual-text">&nbsp;TryAgain&nbsp;</span>
+      </button>
+    </div>
+    <script type="module" src="src/js/scene.js"></script>
 </body>
 
 </html>

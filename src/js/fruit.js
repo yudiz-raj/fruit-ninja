@@ -2,6 +2,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 function spawnFruit(model, callBack) {
     const loader = new GLTFLoader();
     loader.load(model, (gltf) => {
+        gltf.userData = ""
         callBack(gltf);
     },
         (xhr) => {

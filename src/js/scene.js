@@ -2,11 +2,16 @@ import * as THREE from 'three';
 import { spawnFruit } from './fruit';
 import { addOrbitControls } from './orbitControls';
 import { handleMouse } from './mouseHandle';
+import BackgroundImage from '../assets/images/background.jpg';
+import dragonModel from '../assets/models/fruits/dragon.glb';
+import pineAppleModel from '../assets/models/fruits/pineApple.glb';
+import pomegranateModel from '../assets/models/fruits/pomegranate.glb';
+import bombModel from '../assets/models/bomb.glb';
 
-// Set up the scene, camera, and renderer
 let scene, camera, renderer, orbit, replayButton, fontGroup, background, fruitGroup, cutFruitGroup, bombGroup, buttonGroup, fruit,
 	bomb, fruitsInterval, bombsInterval, nRandomX, nRandomY, nRandomZ;
-const fruitTypes = ['pineApple', 'dragon', 'pomegranate'];
+const fruitTypes = [pineAppleModel, dragonModel, pomegranateModel];
+const fruitNames = ["pineApple", "dragon", "pomegranate"];
 const setPosition = (object, objectName) => {
 	const startX = Math.random() * 8 - 4;
 	switch (objectName) {
@@ -37,7 +42,12 @@ const setPosition = (object, objectName) => {
 	nRandomY = Math.random() * 0.1 - 0.05;
 	nRandomZ = Math.random() * 0.1 - 0.05;
 }
+const clearIntervals = () => {
+	clearInterval(fruitsInterval);
+	clearInterval(bombsInterval);
+}
 function startGame() {
+	document.getElementById("score-container").style.display = "block";
 	clearInterval(fruitsInterval);
 	clearInterval(bombsInterval);
 	let score = 0;
@@ -63,28 +73,33 @@ function startGame() {
 	const spawnFruitsBasedOnScore = (modelPath, object, objectName) => {
 		createObject(modelPath, object, objectName);
 	};
-
-	const randomFruitType = fruitTypes[Math.floor(Math.random() * fruitTypes.length)];
-	spawnFruitsBasedOnScore(`src/assets/models/fruits/${randomFruitType}.glb`, fruit, randomFruitType);
+	const randomFruit = () => {
+		const index = Math.floor(Math.random() * fruitTypes.length)
+		const randomFruitType = fruitTypes[index];
+		const objectName = fruitNames[index];
+		return [randomFruitType, objectName];
+	}
+	const [randomFruitType, objectName] = randomFruit();
+	spawnFruitsBasedOnScore(randomFruitType, fruit, objectName);
 
 	const updateFruitsInterval = () => {
 		clearInterval(fruitsInterval);
 		fruitsInterval = setInterval(() => {
-			const randomFruitType = fruitTypes[Math.floor(Math.random() * fruitTypes.length)];
-			spawnFruitsBasedOnScore(`src/assets/models/fruits/${randomFruitType}.glb`, fruit, randomFruitType);
+			const [randomFruitType, objectName] = randomFruit();
+			spawnFruitsBasedOnScore(randomFruitType, fruit, objectName);
 		}, calculateInterval(parseInt(document.getElementById('score').textContent.split(': ').pop()), "fruit"));
 	};
 
 	const updateBombsInterval = () => {
 		clearInterval(bombsInterval);
 		bombsInterval = setInterval(() => {
-			spawnFruitsBasedOnScore(`src/assets/models/bomb.glb`, bomb, "bomb");
+			spawnFruitsBasedOnScore(bombModel, bomb, "bomb");
 		}, calculateInterval(parseInt(document.getElementById('score').textContent.split(': ').pop()), "bomb"));
 	};
 
 	updateFruitsInterval();
 	updateBombsInterval();
-	handleMouse(scene, camera, fruitGroup, cutFruitGroup, fruitsInterval, bombsInterval, updateFruitsInterval, updateBombsInterval, score, replayButton, fontGroup, background);
+	handleMouse(scene, camera, fruitGroup, cutFruitGroup, fruitsInterval, bombsInterval, updateFruitsInterval, updateBombsInterval, clearIntervals, score, replayButton, fontGroup, background);
 }
 const init = () => {
 	localStorage.setItem('fruitNinjaBestScore', JSON.parse(localStorage.getItem('fruitNinjaBestScore')) || 0);
@@ -116,20 +131,20 @@ const init = () => {
 	cutFruitGroup = new THREE.Group();
 	cutFruitGroup.name = 'cutFruitGroup';
 	scene.add(cutFruitGroup);
-	const texture = new THREE.TextureLoader().load('src/assets/images/background.jpg');
+	const texture = new THREE.TextureLoader().load(BackgroundImage);
 	const backgroundGeometry = new THREE.PlaneGeometry(window.innerWidth, window.innerHeight);
 	const backgroundMaterial = new THREE.MeshPhongMaterial({ map: texture, side: THREE.DoubleSide, transparent: true });
 	background = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
 	background.position.z = 5;
 	const playButton = document.getElementById("playButton");
 	playButton.addEventListener("click", () => {
-		playButton.style.display = "none";
+		document.getElementById("start-screen").style.display = "none";
 		startGame();
 	})
 	replayButton = document.getElementById("replayButton");
 	replayButton.addEventListener('click', () => {
 		fontGroup.remove(fontGroup.children[0]);
-		replayButton.style.display = "none";
+		document.getElementById('game-over').style.display = 'none';
 		startGame();
 	});
 }
@@ -172,4 +187,21 @@ window.addEventListener('resize', () => {
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
+});
+function showStartScreen() {
+	const loadingScreen = document.getElementById('loading-screen');
+	const startScreen = document.getElementById('start-screen');
+
+	loadingScreen.style.display = 'none';
+	startScreen.style.display = 'block';
+}
+
+function simulateLoading() {
+	setTimeout(() => {
+		showStartScreen();
+	}, 2000);
+}
+
+window.addEventListener('load', () => {
+	simulateLoading();
 });

@@ -1,15 +1,22 @@
 import * as THREE from 'three';
 import { DecalGeometry } from 'three/addons/geometries/DecalGeometry.js';
 import { spawnFruit } from './fruit';
-import { addFont } from './fonts';
-// import { startGame } from './scene';
+import dragon from '../assets/models/cut-fruits/dragon-cut.glb';
+import pineApple from '../assets/models/cut-fruits/pineApple-cut.glb';
+import pomegranate from '../assets/models/cut-fruits/pomegranate-cut.glb';
+import juice from '../assets/images/juice-diffuse.png';
+const oFruitAssets = {
+    dragon,
+    pineApple,
+    pomegranate
+};
 const decals = [];
 const oColor = {
     dragon: 0x7E0025,
     pineApple: 0xB9A908,
     pomegranate: 0x560F1F
 }
-const handleMouse = (scene, camera, fruitGroup, cutFruitGroup, fruitsInterval, bombsInterval, updateFruitsInterval, updateBombsInterval, score, replayButton, fontGroup, background) => {
+const handleMouse = (scene, camera, fruitGroup, cutFruitGroup, fruitsInterval, bombsInterval, updateFruitsInterval, updateBombsInterval, clearIntervals, score, replayButton, fontGroup, background) => {
     const container = document.querySelector('.trail-container');
     const cursor = document.querySelector('.cursor');
     const trailElements = [];
@@ -80,7 +87,8 @@ const handleMouse = (scene, camera, fruitGroup, cutFruitGroup, fruitsInterval, b
                     }
                     const juiceColor = fruitName;
                     addJuice(parent, juiceColor);
-                    spawnFruit(`src/assets/models/cut-fruits/${fruitName}-cut.glb`, (gltf) => {
+                    const selectedModel = oFruitAssets[fruitName];
+                    spawnFruit(selectedModel, (gltf) => {
                         const cutFruits = gltf.scene.children;
                         cutFruits.forEach((cutFruit) => {
                             cutFruitGroup.add(cutFruit);
@@ -92,7 +100,7 @@ const handleMouse = (scene, camera, fruitGroup, cutFruitGroup, fruitsInterval, b
                             cutFruit.acceleration = new THREE.Vector3(parent.acceleration.x, parent.acceleration.y, parent.acceleration.z);
                         });
                     })
-                    spawnFruit(`src/assets/models/cut-fruits/${fruitName}-cut.glb`, (gltf) => {
+                    spawnFruit(selectedModel, (gltf) => {
                         const cutFruits = gltf.scene.children;
                         let i;
                         fruitName == 'pomegranate' ? i = 0 : i = 1;
@@ -114,14 +122,14 @@ const handleMouse = (scene, camera, fruitGroup, cutFruitGroup, fruitsInterval, b
                 if (isBombTouched) return;
                 clearInterval(fruitsInterval);
                 clearInterval(bombsInterval);
-                shakeCamera(2, 0.2);
+                handleBombCollisiton();
                 isBombTouched = true;
             }
         }
     };
     function addJuice(parent, juiceColor) {
         const textureLoader = new THREE.TextureLoader();
-        const decalDiffuse = textureLoader.load('src/assets/images/juice-diffuse.png');
+        const decalDiffuse = textureLoader.load(juice);
         decalDiffuse.colorSpace = THREE.SRGBColorSpace;
 
         const decalMaterial = new THREE.MeshPhongMaterial({
@@ -200,33 +208,22 @@ const handleMouse = (scene, camera, fruitGroup, cutFruitGroup, fruitsInterval, b
                 break;
         }
     }
-    function shakeCamera(duration = 1, intensity = 0.1) {
-        const startTime = Date.now();
-        const endTime = startTime + duration * 1000;
-
-        const shakeLoop = () => {
-            const currentTime = Date.now();
-            if (currentTime < endTime) {
-                camera.position.x += (Math.random() - 0.5) * intensity;
-                camera.position.y += (Math.random() - 0.5) * intensity;
-                camera.position.z += (Math.random() - 0.5) * intensity;
-                requestAnimationFrame(shakeLoop);
-            } else {
-                onPointerUp();
-                removeEventListener('pointerdown', onPointerDown);
-                removeEventListener('pointermove', onPointerMove);
-                removeEventListener('pointerup', onPointerUp);
-                camera.position.set(0, 0, 5);
-                addFont("game over", 13, (font) => {
-                    fontGroup.add(font);
-                    font.position.set(0, 10, -100);
-                    replayButton.style.display = "block";
-                    clearInterval(fruitsInterval);
-                    clearInterval(bombsInterval);
-                })
-            }
-        };
-        shakeLoop();
+    function handleBombCollisiton() {
+        document.body.classList.add('shake');
+        setTimeout(() => {
+            document.body.classList.remove('shake');
+            onPointerUp();
+            removeEventListener('pointerdown', onPointerDown);
+            removeEventListener('pointermove', onPointerMove);
+            removeEventListener('pointerup', onPointerUp);
+            camera.position.set(0, 0, 5);
+            clearIntervals();
+            replayButton.style.display = "block";
+            document.getElementById("score-container").style.display = "none";
+            document.getElementById('game-over').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-best-score').textContent = localStorage.getItem('fruitNinjaBestScore');
+        }, 1000);
     }
     window.addEventListener('pointerdown', onPointerDown);
     window.addEventListener('pointermove', onPointerMove);
